@@ -42,6 +42,8 @@ public final class StudentController implements DefenderController {
 
 		actions[0] = blinkyAlgorithim(game, MsPac, blinky);
 		actions[1] = pinkyAlgorithim(game, MsPac, pinky);
+//		actions[2] = inkyAlgorithim(game, MsPac, inky);
+
 		actions[2] = inkyAlgorithim(game, MsPac, inky, inkysFriends);
 		actions[3] = sueAlgorithim(game, MsPac, sue);
 
@@ -83,9 +85,64 @@ public final class StudentController implements DefenderController {
 	}
 
 
-
-
 	public int inkyAlgorithim(Game game, Actor MsPac, Defender inky, List<Defender> inkysFriends) {
+// Inky is the pacman DoubleCrosser - It does the scatter function at a junction
+		int action = -1; // Default value - Don't move
+		List<Integer> possibleDirs = inky.getPossibleDirs(); // Get valid ghost moves
+
+		if (possibleDirs.size() != 0) { // If ghost is out of lair
+			if(!inky.isVulnerable()) { //If ghost is not vulnerable
+
+				// Chase pacman or double-cross pacman if possible
+				boolean ghostInPath = false;
+				// get the path to pacman
+				List<Node> pathToDevastator = inky.getPathTo(MsPac.getLocation());
+				// Find the nearest node on the path
+				Node followDevastator = inky.getTargetNode(pathToDevastator, true);
+
+				// check if another ghost is in the same path leading to pacman
+				for (int i = 0; i < pathToDevastator.size(); i++) {
+					for (int j = 0; j < inkysFriends.size(); j++) {
+						if (inkysFriends.get(j).getLocation() == pathToDevastator.get(i) && !inkysFriends.get(j).isVulnerable()){
+							ghostInPath = true;
+							break;
+						}
+					}
+				}
+
+				// if ghost in the same path and inky is at a junction
+				if (ghostInPath && inky.getLocation().isJunction()){
+					List<Node> neighbors = inky.getPossibleLocations(); // excludes opposite direction
+					for (int j = 0; j < neighbors.size(); j++) {
+						if (neighbors.get(j) != followDevastator){
+							// take a different path
+							action = inky.getNextDir(neighbors.get(j), true);
+						}
+					}
+				} else {
+					//follow that path
+					action = inky.getNextDir(followDevastator, true);
+				}
+
+			} else {
+				// Ghost is vulnerable - Run away from pacman
+				action = inky.getNextDir(MsPac.getLocation(), false);
+			}
+		}
+
+		return action;
+
+	}
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////
+/*
+	public int inkyAlgorithim(Game game, Actor MsPac, Defender inky, List<Defender> inkysFriends) {
+
 		boolean sharedPath = false;
 		if(inky.getPossibleDirs().size() !=0) {
 			List <Node> pathToDestruction = inky.getPathTo(MsPac.getLocation());
@@ -97,17 +154,22 @@ public final class StudentController implements DefenderController {
 				}
 			}
 			if(!(sharedPath)){
+				if(inky.getLocation().isJunction()){
+					List <Node> possibleLoc = inky.getLocation().getNeighbors();
 
-			}
+
+			}else
+				return inky.getNextDir(MsPac.getLocation(), true);
 
 		}else
 			return -1;
-		
+
 	}
-
-
-	/*
-	//orange ghost
+	*/
+////////////////////////////////////////////////////////////////////////////////////////////
+/*
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+	//orange ghost; this one works if uncommeted
 	public int inkyAlgorithim(Game game, Actor MsPac, Defender inky) {
 		Node nullFlag = null;
 		Attacker attacker = game.getAttacker();
@@ -127,8 +189,11 @@ public final class StudentController implements DefenderController {
 		}else
 			return -1;
 	}
+///////////////////////////////////////////////////////////////////////////////////////////////////
 */
-	//
+
+
+	//blue ghost
 	public int sueAlgorithim(Game game, Actor MsPac, Defender sue){
 
 		if(sue.getPossibleDirs().size() != 0){
