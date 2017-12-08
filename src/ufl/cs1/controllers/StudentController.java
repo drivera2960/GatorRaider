@@ -11,16 +11,6 @@ import java.util.List;
 public final class StudentController implements DefenderController {
 
 	public void init(Game game) {
-/*
-		System.out.print(game.getCurMaze().getPowerPillNodes().get(0).getX()+ ", ");
-		System.out.println(game.getCurMaze().getPowerPillNodes().get(0).getY());
-		System.out.print(game.getCurMaze().getPowerPillNodes().get(1).getX()+ ", ");
-		System.out.println(game.getCurMaze().getPowerPillNodes().get(1).getY());
-		System.out.print(game.getCurMaze().getPowerPillNodes().get(2).getX()+ ", ");
-		System.out.println(game.getCurMaze().getPowerPillNodes().get(2).getY());
-		System.out.print(game.getCurMaze().getPowerPillNodes().get(3).getX()+ ", ");
-		System.out.println(game.getCurMaze().getPowerPillNodes().get(3).getY());
-*/
 	}
 
 	public void shutdown(Game game) {
@@ -40,23 +30,20 @@ public final class StudentController implements DefenderController {
 		List<Defender> inkysFriends = game.getDefenders();
 		inkysFriends.remove(2);
 
-		actions[0] = blinkyAlgorithim(game, MsPac, blinky);
-		actions[1] = pinkyAlgorithim(game, MsPac, pinky);
-//		actions[2] = inkyAlgorithim(game, MsPac, inky);
-
-		actions[2] = inkyAlgorithim(game, MsPac, inky, inkysFriends);
-		actions[3] = sueAlgorithim(game, MsPac, sue);
+		actions[0] = blinkyAlgorithm(game, MsPac, blinky);
+		actions[1] = pinkyAlgorithm(game, MsPac, pinky);
+		actions[2] = inkyAlgorithm(game, MsPac, inky);                      //Use this method call for the placeholder inkyAlgorithm
+//		actions[2] = inkyAlgorithm(game, MsPac, inky, inkysFriends);        //Use method call for completed inkyAlgorithim
+		actions[3] = sueAlgorithm(game, MsPac, sue);
 
 		//scatter(actions, blinky, pinky, inky, sue);
 
-		//System.out.println(blinky.getLocation().getPathDistance(MsPac.getLocation()));
-		//System.out.println(MsPac.getLocation().getNeighbor(MsPac.getDirection() ));
-		//System.out.println(attacker.getPossibleLocations(false));
+
 		return actions;
 
 	}
-	//power pill ghost
-	public int blinkyAlgorithim(Game game, Actor MsPac,Defender blinky){
+	//Coded by David Rivera
+	public int blinkyAlgorithm(Game game, Actor MsPac,Defender blinky){
 		if (blinky.getPossibleDirs().size() != 0) {
 			if(game.getPowerPillList().size() != 0) {
 				if (!(blinky.isVulnerable())) {											//blinky is not vulnerable
@@ -74,71 +61,18 @@ public final class StudentController implements DefenderController {
 			return -1;
 	}
 
-	public int pinkyAlgorithim(Game game, Actor MsPac, Defender pinky){
-		if (pinky.getPossibleDirs().size() != 0) {
-			if (!(pinky.isVulnerable())) {
-				return pinky.getNextDir(MsPac.getLocation(), true);
-			} else
+
+	//Coded by Nishtha Garg
+	public int pinkyAlgorithm(Game game, Actor MsPac, Defender pinky){
+			if (pinky.isVulnerable()) {
 				return pinky.getNextDir(MsPac.getLocation(), false);
-		}else
-			return -1;
-	}
-
-
-	public int inkyAlgorithim(Game game, Actor MsPac, Defender inky, List<Defender> inkysFriends) {
-// Inky is the pacman DoubleCrosser - It does the scatter function at a junction
-		int action = -1; // Default value - Don't move
-		List<Integer> possibleDirs = inky.getPossibleDirs(); // Get valid ghost moves
-
-		if (possibleDirs.size() != 0) { // If ghost is out of lair
-			if(!inky.isVulnerable()) { //If ghost is not vulnerable
-
-				// Chase pacman or double-cross pacman if possible
-				boolean ghostInPath = false;
-				// get the path to pacman
-				List<Node> pathToDevastator = inky.getPathTo(MsPac.getLocation());
-				// Find the nearest node on the path
-				Node followDevastator = inky.getTargetNode(pathToDevastator, true);
-
-				// check if another ghost is in the same path leading to pacman
-				for (int i = 0; i < pathToDevastator.size(); i++) {
-					for (int j = 0; j < inkysFriends.size(); j++) {
-						if (inkysFriends.get(j).getLocation() == pathToDevastator.get(i) && !inkysFriends.get(j).isVulnerable()){
-							ghostInPath = true;
-							break;
-						}
-					}
-				}
-
-				// if ghost in the same path and inky is at a junction
-				if (ghostInPath && inky.getLocation().isJunction()){
-					List<Node> neighbors = inky.getPossibleLocations(); // excludes opposite direction
-					for (int j = 0; j < neighbors.size(); j++) {
-						if (neighbors.get(j) != followDevastator){
-							// take a different path
-							action = inky.getNextDir(neighbors.get(j), true);
-						}
-					}
-				} else {
-					//follow that path
-					action = inky.getNextDir(followDevastator, true);
-				}
-
-			} else {
-				// Ghost is vulnerable - Run away from pacman
-				action = inky.getNextDir(MsPac.getLocation(), false);
-			}
-		}
-
-		return action;
-
+			} else
+				return pinky.getNextDir(MsPac.getLocation(), true);
 	}
 
 
 
-
-
-
+//Below commented out method call is a work in progress for inky.  Written by Lawrence and Dave.
 ///////////////////////////////////////////////////////////////////////////////////
 /*
 	public int inkyAlgorithim(Game game, Actor MsPac, Defender inky, List<Defender> inkysFriends) {
@@ -167,10 +101,10 @@ public final class StudentController implements DefenderController {
 	}
 	*/
 ////////////////////////////////////////////////////////////////////////////////////////////
-/*
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-	//orange ghost; this one works if uncommeted
-	public int inkyAlgorithim(Game game, Actor MsPac, Defender inky) {
+
+    //This method for inky is a placeholder
+    //Final code will be made by Lawrence and Dave
+	public int inkyAlgorithm(Game game, Actor MsPac, Defender inky) {
 		Node nullFlag = null;
 		Attacker attacker = game.getAttacker();
 
@@ -189,12 +123,9 @@ public final class StudentController implements DefenderController {
 		}else
 			return -1;
 	}
-///////////////////////////////////////////////////////////////////////////////////////////////////
-*/
 
-
-	//blue ghost
-	public int sueAlgorithim(Game game, Actor MsPac, Defender sue){
+    //This method is simply a placeholder.  Final code will be coded by Christian
+	public int sueAlgorithm(Game game, Actor MsPac, Defender sue){
 
 		if(sue.getPossibleDirs().size() != 0){
 			if(!(sue.isVulnerable())){
@@ -212,8 +143,25 @@ public final class StudentController implements DefenderController {
 			return -1;
 	}
 
-
 }
+
+//Below System.out(s) were made to display different information.  These were used to get an understanding of how method calls
+//would be implemented.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+		System.out.print(game.getCurMaze().getPowerPillNodes().get(0).getX()+ ", ");
+		System.out.println(game.getCurMaze().getPowerPillNodes().get(0).getY());
+		System.out.print(game.getCurMaze().getPowerPillNodes().get(1).getX()+ ", ");
+		System.out.println(game.getCurMaze().getPowerPillNodes().get(1).getY());
+		System.out.print(game.getCurMaze().getPowerPillNodes().get(2).getX()+ ", ");
+		System.out.println(game.getCurMaze().getPowerPillNodes().get(2).getY());
+		System.out.print(game.getCurMaze().getPowerPillNodes().get(3).getX()+ ", ");
+		System.out.println(game.getCurMaze().getPowerPillNodes().get(3).getY());
+*/
+
+
 //System.out.println( MsPac.getLocation() );
 //System.out.print(ghost1.getLocation().getX()+", ");
 //System.out.println(ghost1.getLocation().getY());
@@ -225,3 +173,7 @@ public final class StudentController implements DefenderController {
 //actions[0] = ghost1.getPossibleDirs().get(Game.rng.nextInt(ghost1.getPossibleDirs().size()));
 //actions[0] = ghost1.getNextDir(capture,true);
 
+
+//System.out.println(blinky.getLocation().getPathDistance(MsPac.getLocation()));
+//System.out.println(MsPac.getLocation().getNeighbor(MsPac.getDirection() ));
+//System.out.println(attacker.getPossibleLocations(false));
