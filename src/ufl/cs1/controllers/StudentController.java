@@ -15,12 +15,12 @@ public final class StudentController implements DefenderController {
 		int[] actions = new int[Game.NUM_DEFENDER];             // An int array of size 4, that holds the next action of each ghost.
 
 		Actor MsPac = game.getAttacker();                       // Creates an Actor object of Ms. Pacman aka MsPac aka Devastator
+		Attacker attacker = game.getAttacker();					// Creates a Attacker object of Ms. Pacman
 
 		Defender blinky = game.getDefender(0);		// Creates a Defender object of the RED ghost
 		Defender pinky = game.getDefender(1);		// Creates a Defender object of the PINK ghost
 		Defender inky = game.getDefender(2);		// Creates a Defender object of the ORANGE ghost
 		Defender sue = game.getDefender (3);		// Creates a Defender object of the BLUE ghost
-		Attacker attacker = game.getAttacker();
 
 		actions[0] = blinkyAlgorithm(game, MsPac, blinky);      // Calls blinkyAlgorithm, which returns the next direction Blinky will take.
 		actions[1] = pinkyAlgorithm(MsPac, pinky);        	    // Calls pinkyAlgorithm, which returns the next direction Pinky will take.
@@ -115,8 +115,8 @@ public final class StudentController implements DefenderController {
 		return action;
 	}
 
-    //This method is simply a placeholder.  Final code will be coded by Christian
 
+    //This method is simply a placeholder.  Final code will be coded by Christian
 	public int sueAlgorithm(Game game, Actor MsPac, Defender sue){
 		if(sue.getPossibleDirs().size() != 0){
 			if(!(sue.isVulnerable())){
