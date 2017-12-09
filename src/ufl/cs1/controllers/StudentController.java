@@ -30,10 +30,10 @@ public final class StudentController implements DefenderController {
 		inkysFriends.remove(2);
 
 		actions[0] = blinkyAlgorithm(game, MsPac, blinky);      //Calls blinkyAlgorithm, which returns the next direction Blinky will take.
-		actions[1] = pinkyAlgorithm(MsPac, pinky);        		//Calls pinkyAlgorithm, which returns the next direction Pinky will take.
-		actions[2] = inkyAlgorithm(game, MsPac, inky);          //Calls inkyAlgorithm, which returns the next direction Inky will take.
+		actions[1] = pinkyAlgorithm(MsPac, pinky);        	    //Calls pinkyAlgorithm, which returns the next direction Pinky will take.
+//		actions[2] = inkyAlgorithm(game, MsPac, inky);          //Calls inkyAlgorithm, which returns the next direction Inky will take.
                                                                 // Use this particular method call for the placeholder inkyAlgorithm
-//		actions[2] = inkyAlgorithm(game, MsPac, inky, inkysFriends);        //Use method call for the soon to be completed, final inkyAlgorithm
+		actions[2] = inkyAlgorithm(game, attacker, inky, inkysFriends);        //Use method call for the soon to be completed, final inkyAlgorithm
 
         actions[3] = sueAlgorithm(game, MsPac, sue);            //Calls sueAlgorithm, which returns the next direction Sue will take.
 
@@ -45,7 +45,7 @@ public final class StudentController implements DefenderController {
 	}
 	//Coded by David Rivera
     //This method is for blinky's algorithm.  Blinky calculates the nearest power pill to him and travels to it.  He does this
-    //because Ms. Pacman is always trying to eat the power pills in order to eat the ghosts, and get more points.  By sending
+    //because Ms. MsPac is always trying to eat the power pills in order to eat the ghosts, and get more points.  By sending
     //Blinky to the closest power pill, he guards it, however, he is vulnerable to Ms. Pacman if she gets behind him.  To counter this,
     //Blinky calculates the distance between himself and Ms. Pacman, and if she comes near him, he will turn around and chase her.
     //If Ms. Pacman manages to eat all the power pills, Blinky will resort to chasing her indefinitely, as there is no more Power Pills
@@ -89,6 +89,62 @@ public final class StudentController implements DefenderController {
 
 
 
+
+
+    public int inkyAlgorithm (Game game, Attacker MsPac, Defender inky, List<Defender> inkysFriends) {
+        // Inky is the MsPac DoubleCrosser - It does the scatter function at a junction
+        int action = -1; // Default value - Don't move
+        List<Integer> possibleDirs = inky.getPossibleDirs(); // Get valid ghost moves
+
+        if (possibleDirs.size() != 0) { // If ghost is out of lair
+            if(!inky.isVulnerable()) { //If ghost is not vulnerable
+
+                // Chase MsPac or double-cross MsPac if possible
+                boolean ghostInPath = false;
+                // get the path to MsPac
+                List<Node> pathToDevastator = inky.getPathTo(MsPac.getLocation());
+                // Find the nearest node on the path
+                Node followDevastator = inky.getTargetNode(pathToDevastator, true);
+
+                // check if another ghost is in the same path leading to MsPac
+                for (int i = 0; i < pathToDevastator.size(); i++) {
+                    for (int j = 0; j < inkysFriends.size(); j++) {
+                        if (inkysFriends.get(j).getLocation() == pathToDevastator.get(i) && !inkysFriends.get(j).isVulnerable()){
+                            ghostInPath = true;
+                            break;
+                        }
+                    }
+                }
+
+                // if ghost in the same path and inky is at a junction
+                boolean nullFlag = false;
+                if (ghostInPath && inky.getLocation().isJunction() && inky.getLocation().getPathDistance(MsPac.getLocation())<=50){
+                    List<Node> neighbors = inky.getPossibleLocations(); // excludes opposite direction
+                    //System.out.println("Neighbors: " +neighbors);
+
+                    while (nullFlag == false){
+                        Node flagger = neighbors.get(game.rng.nextInt(neighbors.size()));
+                        if(flagger != null){
+                            action = inky.getNextDir(flagger, true);
+                            nullFlag = true;
+                        }
+                    }
+                } else {
+                    //follow that path
+                    action = inky.getNextDir(MsPac.getLocation(), true);
+                }
+
+            } else {
+                // Ghost is vulnerable - Run away from MsPac
+                action = inky.getNextDir(MsPac.getLocation(), false);
+            }
+        }
+
+        return action;
+    }
+
+
+
 //Below is a commented out, work in progress, method for Inky.  Written by Lawrence and Dave.
 ///////////////////////////////////////////////////////////////////////////////////
 /*
@@ -119,6 +175,7 @@ public final class StudentController implements DefenderController {
 	*/
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+    /*
     //This method for inky is a placeholder
     //Final code will be made by Lawrence and Dave
 	public int inkyAlgorithm(Game game, Actor MsPac, Defender inky) {
@@ -140,6 +197,7 @@ public final class StudentController implements DefenderController {
 		}else
 			return -1;
 	}
+	*/
 
     //This method is simply a placeholder.  Final code will be coded by Christian
 	public int sueAlgorithm(Game game, Actor MsPac, Defender sue){
@@ -162,7 +220,7 @@ public final class StudentController implements DefenderController {
 }
 
 //Below System.out(s) were made to display different information.  These were used to get an understanding of how method calls
-//would be implemented in the project.
+//would be implemented in the project.  These will be removed.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
