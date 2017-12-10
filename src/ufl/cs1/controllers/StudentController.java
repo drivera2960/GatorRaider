@@ -76,7 +76,7 @@ public final class StudentController implements DefenderController {
 	}
 
 	// Coded by Layiwola Ibukun
-	// This method is for Inky's algorithm. Inky is the smartest ghost on the team. Inky tries to double cross Ms. Pacman when the conditions are right.
+	// This method is for Inky's algorithm.  Inky tries to double cross Ms. Pacman when the conditions are right.
 	// If Inky is faraway from Ms. Pacman, he chases after the node in front of her. When Inky becomes reasonable close to Ms. Pacman, he makes a decision
 	// based on his position relative to hers. If she is facing him, he goes after her head on, but if she turns her back on him, he decides to
 	// get in front of her face by travelling in a different direction at the next junction. The direction that Inky chooses in order to double cross
@@ -86,7 +86,7 @@ public final class StudentController implements DefenderController {
 	// Of course, when Inky becomes vulnerable, he attempts to flee from Ms. Pacman.
 
 	public int inkyAlgorithm(Game game, Attacker MsPac, Defender inky) {
-		// Inky is the pacman DoubleCrosser - It does the scatter function at a junction
+		// Inky is the Ms. Pacman DoubleCrosser - It does the scatter function at a junction
 		int action = -1; // Default value - Don't move
 
 		if (inky.getPossibleDirs().size() != 0) {		// Checks IF INKY is able to move
@@ -115,23 +115,31 @@ public final class StudentController implements DefenderController {
 		return action;
 	}
 
+    // Coded by Christian Moore
+    // This method is for Sue's algorithm.  Sue is always moving to the next normal pill.  While initially this is not very useful,
+    // it becomes a game changer as the game progresses.  Given that Ms. Pacman is consuming the pills, she tends to take
+    // turns where pills are.  As she consumes more and more pills, Sue's movement becomes more condensed.  Eventually, Ms. Pacman
+    // will be forced to go near Sue.  To add to this, Sue will begin chasing Ms. Pacman if Ms. Pacman goes near her.
+    // Restricting Sue's movement means we keep Sue from going into areas with no pills; areas where Ms. Pacman tends to not go to.
+    // This makes Sue's strategy difficult for Ms. Pacman to win the game, because eventually there will only be a few pills left,
+    // and as Ms. Pacman heads towards them, Sue will already be nearby.
 
-    //This method is simply a placeholder.  Final code will be coded by Christian
-	public int sueAlgorithm(Game game, Actor MsPac, Defender sue){
-		if(sue.getPossibleDirs().size() != 0){
-			if(!(sue.isVulnerable())){
-				if(game.getPillList().size() != 0){
-					if (sue.getLocation().getPathDistance(MsPac.getLocation()) <=50)
-						return sue.getNextDir(MsPac.getLocation(),true);
-					else
-					return sue.getNextDir(sue.getTargetNode(game.getPillList(), true), true);
-				}else
-					return sue.getNextDir(MsPac.getLocation(),true);
-			}else
-				return sue.getNextDir(MsPac.getLocation(), false);
+    public int sueAlgorithm(Game game, Actor MsPac, Defender sue){
+        if(sue.getPossibleDirs().size() != 0){      // Check the possibility of a null pointer exception. If not found, proceed with algorithm.
+            if(!(sue.isVulnerable())){		        // If Sue is not currently vulnerable due to Ms. Pacman acquiring a pill AND
+                if(game.getPillList().size() != 0){ // If there are still  pill around the maze, sue will still be able to proceed.
+                    if (sue.getLocation().getPathDistance(MsPac.getLocation()) <= 50) // If the current distance between Sue in respect to of Ms. Pacman position is less than a length 50 units.
+                        return sue.getNextDir(MsPac.getLocation(),true);     // Turn around and chase Ms. Pacman.
+                    else
+                        return sue.getNextDir(sue.getTargetNode(game.getPillList(), true), true); //Look for the  pill in the Nocd.
+                }else
+                    return sue.getNextDir(MsPac.getLocation(),true);    // If all  pills have run out due to Ms. Pacman consuming all of them, then
+                                                                                // Sue will continue chasing her indefinitely.
+            }else
+                return sue.getNextDir(MsPac.getLocation(), false);      //If Sue is vulnerable then run away from her.
 
-		}else
-			return -1;
-	}
+        }else	//If initial condition is not met, then return a -1.
+            return -1;
+    }
 
 }
